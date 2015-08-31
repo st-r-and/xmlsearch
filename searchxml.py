@@ -2,11 +2,12 @@
 import os
 import zipfile
 import sqlite3
+from datetime import date, time, datetime
 
 class search:
     def __init__(self):
         self.name = 'xmlzip.db'
-        self.curs = self.buildsql(self.name)
+        self.conn = self.buildsql(self.name)
         
     def listdir(self, dirname):
         files = os.listdir(dirname)
@@ -37,11 +38,17 @@ class search:
 
     def buildsql(self, name):
         conn = sqlite3.connect(name)
-        return conn.cursor()
+        conn.execute('CREATE TABLE if not exists ziplist(filename TEXT, xmlname TEXT, stamp DATE)')
+        return conn
         
 
     def safetosql(self, data):
-        print(data[0], data[3])
+        d = date(data[1][0],data[1][1],data[1][2])
+        t = time(data[1][3],data[1][4],data[1][5], 0)
+        curs = self.conn.cursor()
+        curs.execute('INSERT INTO ziplist(filename, xmlname, stamp) VALUES (?, ?, ?)',
+                          (data[3], data[0], datetime.combine(d, t)))
+        self.conn.commit()
         return 0
 
 
