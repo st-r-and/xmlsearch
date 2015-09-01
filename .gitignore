@@ -1,3 +1,6 @@
 ftp/**/*
 ftp-sample/**/*
+bak/**/*
+result/**/*
 xmlzip.db
+id.txt
