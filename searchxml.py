@@ -34,6 +34,7 @@ class search:
                 # print(z.filename, z.date_time, z.file_size, f, timestamp)
                 self.safetosql(list)
                 self.count +=1
+        self.conn.commit()
         return self.count
 
     def buildsql(self, name):
@@ -48,12 +49,12 @@ class search:
         curs = self.conn.cursor()
         curs.execute('INSERT INTO ziplist(filename, xmlname, stamp) VALUES (?, ?, ?)',
                           (data[3], data[0], datetime.combine(d, t)))
-        self.conn.commit()
+        #self.conn.commit()
         return 0
 
 
   
-dirname = "./ftp-sample"
-#dirname = "./ftp"
+#dirname = "./ftp-sample"
+dirname = "./ftp"
 s = search()
 print(s.listdirzip(dirname))
