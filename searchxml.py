@@ -9,6 +9,16 @@ class search:
         self.name = 'xmlzip.db'
         self.conn = self.buildsql(self.name)
         self.count = 0
+
+    def setquelle(quelle):
+        pass
+
+    def setziel(ziel):
+        pass
+
+    def setsearch(search):
+        pass
+        
     def listdir(self, dirname):
         files = os.listdir(dirname)
         return files
@@ -31,6 +41,13 @@ class search:
         self.conn.commit()
         return self.count
 
+    def exzip(self, quelle, ziel, datei)
+        pass
+
+    def findxml(self, search)
+        pass
+
+    
     def buildsql(self, name):
         conn = sqlite3.connect(name)
         conn.execute('CREATE TABLE if not exists ziplist(filename TEXT NOT NULL, xmlname TEXT NOT NULL, stamp DATE NOT NULL)')
@@ -48,7 +65,7 @@ class search:
         except sqlite3.IntegrityError:
             pass
         else:
-            self.cont +=1
+            self.count +=1
             #print(data[0], 'schon da')
         #self.conn.commit()
         return 0
@@ -58,4 +75,4 @@ class search:
 #dirname = "./ftp-sample"
 dirname = "./ftp"
 s = search()
-print(s.listdirzip(dirname))
+c = s.listdirzip(dirname)
