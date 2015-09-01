@@ -15,24 +15,46 @@ class search:
         self.search = ''
 
     def setsrc(self, src):
-        self.src = src
+        if os.path.isdir(src):
+            self.src = src
+            return 1
+        else:
+            return 0
 
     def setdst(self, dst):
-        self.dst = dst
+        if os.path.isdir(dst):
+            self.dst = dst
+            return 1
+        else:
+            return 0
 
     def setsearch(self, search):
-        self.search = search
+        if os.path.isfile(search):
+            self.search = search
+            return 1
+        else:
+            return 0
         
     def getsrc(self):
-        return self.src
+        if self.src != '':
+            return self.src
+        else:
+            return 0
 
     def getdst(self):
-        return self.src
+        if self.dst != '':
+            return self.dst
+        else:
+            return 0
 
     def getsearch(self):
-        return self.search
+        if self.search != '':
+            return self.search
+        else:
+            return 0
     
-    def listdir(self, dirname):
+    def listdir(self):
+        dirname = self.src
         files = os.listdir(dirname)
         return files
 
@@ -40,18 +62,15 @@ class search:
         zips = zipfile.ZipFile(filename, 'r')
         return zips.infolist()
 
-    def listdirzip(self, dirname):
-        files = self.listdir(dirname)
+    def listdirzip(self): #alle zip dateien im ordner
+        dirname = self.src
+        files = self.listdir()
         for f in files:
             if zipfile.is_zipfile(dirname + '/' + f):
                 #print('alles ok')
                 zipf = self.listzip(dirname + "/" + f)
                 for z in zipf:                
-                    list = []
-                    list.append(z.filename)
-                    list.append(z.date_time)
-                    list.append(z.file_size)
-                    list.append(f)
+                    list = [z.filename, z.date_time, z.file_size, f]
                     self.safetosql(list)
             else:
                 print(f, 'hat einen Fehler')
@@ -90,9 +109,13 @@ class search:
 
 
   
-dirname = "./ftp-sample"
-#dirname = "./ftp"
+#dirname = "./ftp-sample"
+dirname = "./ftp"
 s = search()
-c = s.listdirzip(dirname)
-s.setsrc(dirname)
-print(s.getsrc())
+
+#s.setsrc(dirname)
+
+print(int(s.getsrc()))
+#s.setsearch('id2.txt')
+#print(s.getsearch())
+#s.listdirzip()
