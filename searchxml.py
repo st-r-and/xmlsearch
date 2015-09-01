@@ -8,7 +8,7 @@ class search:
     def __init__(self):
         self.name = 'xmlzip.db'
         self.conn = self.buildsql(self.name)
-        
+        self.count = 0
     def listdir(self, dirname):
         files = os.listdir(dirname)
         return files
@@ -18,23 +18,15 @@ class search:
         return zips.infolist()
 
     def listdirzip(self, dirname):
-        self.count = 0
         files = self.listdir(dirname)
         for f in files:
             zipf = self.listzip(dirname + "/" + f)
             for z in zipf:
-                # timestemp = gettimestamp()
                 list = []
                 list.append(z.filename)
                 list.append(z.date_time)
                 list.append(z.file_size)
                 list.append(f)
-                # list.append(timestamp)
-                # safetosql(list)
-                # print(z.filename, z.date_time, z.file_size, f, timestamp)
-                self.count +=1
-                #print(self.count)
-                #print(z.filename)
                 self.safetosql(list)
         self.conn.commit()
         return self.count
@@ -55,6 +47,8 @@ class search:
                           (data[3], data[0], datetime.combine(d, t)))
         except sqlite3.IntegrityError:
             pass
+        else:
+            self.cont +=1
             #print(data[0], 'schon da')
         #self.conn.commit()
         return 0
