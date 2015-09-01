@@ -32,14 +32,17 @@ class search:
                 # list.append(timestamp)
                 # safetosql(list)
                 # print(z.filename, z.date_time, z.file_size, f, timestamp)
-                self.safetosql(list)
                 self.count +=1
+                #print(self.count)
+                #print(z.filename)
+                self.safetosql(list)
         self.conn.commit()
         return self.count
 
     def buildsql(self, name):
         conn = sqlite3.connect(name)
-        conn.execute('CREATE TABLE if not exists ziplist(filename TEXT, xmlname TEXT, stamp DATE)')
+        conn.execute('CREATE TABLE if not exists ziplist(filename TEXT NOT NULL, xmlname TEXT NOT NULL, stamp DATE NOT NULL)')
+        conn.execute('CREATE UNIQUE INDEX if not exists xml_unique ON ziplist(xmlname)')
         return conn
         
 
@@ -47,8 +50,12 @@ class search:
         d = date(data[1][0],data[1][1],data[1][2])
         t = time(data[1][3],data[1][4],data[1][5], 0)
         curs = self.conn.cursor()
-        curs.execute('INSERT INTO ziplist(filename, xmlname, stamp) VALUES (?, ?, ?)',
+        try:
+            curs.execute('INSERT INTO ziplist(filename, xmlname, stamp) VALUES (?, ?, ?)',
                           (data[3], data[0], datetime.combine(d, t)))
+        except sqlite3.IntegrityError:
+            pass
+            #print(data[0], 'schon da')
         #self.conn.commit()
         return 0
 
