@@ -53,7 +53,7 @@ class search:
 
 
   
-dirname = "./ftp-sample"
-#dirname = "./ftp"
+#dirname = "./ftp-sample"
+dirname = "./ftp"
 s = search()
 print(s.listdirzip(dirname))
