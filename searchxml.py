@@ -9,16 +9,29 @@ class search:
         self.name = 'xmlzip.db'
         self.conn = self.buildsql(self.name)
         self.count = 0
+        self.edst = './error/'
+        self.src = ''
+        self.dst = ''
+        self.search = ''
 
-    def setquelle(quelle):
-        pass
+    def setsrc(self, src):
+        self.src = src
 
-    def setziel(ziel):
-        pass
+    def setdst(self, dst):
+        self.dst = dst
 
-    def setsearch(search):
-        pass
+    def setsearch(self, search):
+        self.search = search
         
+    def getsrc(self):
+        return self.src
+
+    def getdst(self):
+        return self.src
+
+    def getsearch(self):
+        return self.search
+    
     def listdir(self, dirname):
         files = os.listdir(dirname)
         return files
@@ -30,21 +43,26 @@ class search:
     def listdirzip(self, dirname):
         files = self.listdir(dirname)
         for f in files:
-            zipf = self.listzip(dirname + "/" + f)
-            for z in zipf:
-                list = []
-                list.append(z.filename)
-                list.append(z.date_time)
-                list.append(z.file_size)
-                list.append(f)
-                self.safetosql(list)
+            if zipfile.is_zipfile(dirname + '/' + f):
+                #print('alles ok')
+                zipf = self.listzip(dirname + "/" + f)
+                for z in zipf:                
+                    list = []
+                    list.append(z.filename)
+                    list.append(z.date_time)
+                    list.append(z.file_size)
+                    list.append(f)
+                    self.safetosql(list)
+            else:
+                print(f, 'hat einen Fehler')
+                os.rename(dirname + '/' + f, self.edst + '/' + f)
         self.conn.commit()
         return self.count
 
-    def exzip(self, quelle, ziel, datei)
+    def exzip(self, quelle, ziel, datei):
         pass
 
-    def findxml(self, search)
+    def findxml(self, search):
         pass
 
     
@@ -62,17 +80,19 @@ class search:
         try:
             curs.execute('INSERT INTO ziplist(filename, xmlname, stamp) VALUES (?, ?, ?)',
                           (data[3], data[0], datetime.combine(d, t)))
-        except sqlite3.IntegrityError:
+        except sqlite3.IntegrityError: #doppelte abfangen
             pass
         else:
-            self.count +=1
+            self.count +=1 # eingefügte zählen
             #print(data[0], 'schon da')
         #self.conn.commit()
         return 0
 
 
   
-#dirname = "./ftp-sample"
-dirname = "./ftp"
+dirname = "./ftp-sample"
+#dirname = "./ftp"
 s = search()
 c = s.listdirzip(dirname)
+s.setsrc(dirname)
+print(s.getsrc())
