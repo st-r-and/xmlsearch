@@ -62,12 +62,12 @@ class search:
         zips = zipfile.ZipFile(filename, 'r')
         return zips.infolist()
 
+
     def listdirzip(self): #alle zip dateien im ordner
         dirname = self.src
         files = self.listdir()
         for f in files:
-            if zipfile.is_zipfile(dirname + '/' + f):
-                #print('alles ok')
+            if zipfile.is_zipfile(self.src + '/' + f):
                 zipf = self.listzip(dirname + "/" + f)
                 for z in zipf:                
                     list = [z.filename, z.date_time, z.file_size, f]
@@ -93,7 +93,8 @@ class search:
     def buildsql(self, name):
         conn = sqlite3.connect(name)
         conn.execute('CREATE TABLE if not exists ziplist(filename TEXT NOT NULL, xmlname TEXT NOT NULL, stamp DATE NOT NULL)')
-        conn.execute('CREATE UNIQUE INDEX if not exists xml_unique ON ziplist(xmlname)')
+        conn.execute('CREATE UNIQUE INDEX if not exists xml_unique ON ziplist(xmlname, stamp)')
+        # unique auf xmlname und stamp
         return conn
         
 
