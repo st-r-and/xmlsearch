@@ -14,51 +14,51 @@ class search:
         self.dst = ''
         self.search = ''
 
-    def setsrc(self, src):
+    def setsrc(self, src): # quellordner einstellen
         if os.path.isdir(src):
             self.src = src
             return 1
         else:
             return 0
 
-    def setdst(self, dst):
+    def setdst(self, dst): # zielordner einstellen -> für die xml files
         if os.path.isdir(dst):
             self.dst = dst
             return 1
         else:
             return 0
 
-    def setsearch(self, search):
+    def setsearch(self, search): # datei mit zu suchenden ID-codes
         if os.path.isfile(search):
             self.search = search
             return 1
         else:
             return 0
         
-    def getsrc(self):
+    def getsrc(self): # den quellordner zurückgeben
         if self.src != '':
             return self.src
         else:
             return 0
 
-    def getdst(self):
+    def getdst(self): # den zielordner zurückgeben
         if self.dst != '':
             return self.dst
         else:
             return 0
 
-    def getsearch(self):
+    def getsearch(self): # die suchdatei zurückgeben
         if self.search != '':
             return self.search
         else:
             return 0
     
-    def listdir(self):
+    def listdir(self): # die dateien aus dem quellordner auslesen
         dirname = self.src
         files = os.listdir(dirname)
         return files
 
-    def listzip(self, filename):
+    def listzip(self, filename): # zipdatei inhalt ausgeben
         zips = zipfile.ZipFile(filename, 'r')
         return zips.infolist()
 
@@ -78,12 +78,17 @@ class search:
         self.conn.commit()
         return self.count
 
-    def exzip(self, quelle, ziel, datei):
-        pass
+    def exzip(self, xmlf, zipf):
+        src = self.src
+        dst = self.dst
+        zf = zipfile.Zipfile(src + '/' + zipf, 'r')
+        zf.extract(xmlf, dst)
+        
 
-    def findxml(self, search):
-        pass
-
+    def findxml(self, xmlf):
+        curs = self.conn.cursor()
+        curs.execute('SELECT filename FROM ziplist WHERE xmlname = ? ORDER BY stamp DESC LIMIT 1', xmlf)
+        return curs.fetchone()
     
     def buildsql(self, name):
         conn = sqlite3.connect(name)
@@ -113,9 +118,9 @@ class search:
 dirname = "./ftp"
 s = search()
 
-#s.setsrc(dirname)
+s.setsrc(dirname)
 
-print(int(s.getsrc()))
+#print(int(s.getsrc()))
 #s.setsearch('id2.txt')
 #print(s.getsearch())
-#s.listdirzip()
+s.listdirzip()
