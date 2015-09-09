@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+import re
 import zipfile
 import sqlite3
 from datetime import date, time, datetime
@@ -78,6 +79,21 @@ class search:
         self.conn.commit()
         return self.count
 
+    def listsearch(self):
+        sfile = self.getsearch()
+        if sfile:
+            mode = 'r'
+            fob = open(sfile, mode)
+            liste = []
+            for line in fob:
+                if re.match("[0-9]{12}", line):
+                    line = line.rstrip() + '.XML'
+                    liste.append(line)
+            fob.close()
+            return liste
+        else:
+            return 0
+
     def exzip(self, xmlf, zipf):
         src = self.src
         dst = self.dst
@@ -85,11 +101,22 @@ class search:
         zf.extract(xmlf, dst)
         
 
-    def findxml(self, xmlf):
+    def findzip(self, xmlf):
         curs = self.conn.cursor()
-        curs.execute('SELECT filename FROM ziplist WHERE xmlname = ? ORDER BY stamp DESC LIMIT 1', xmlf)
-        return curs.fetchone()
+        curs.execute('SELECT filename FROM ziplist WHERE xmlname = ? ORDER BY stamp DESC LIMIT 1', (xmlf,))
+        print(curs.fetchone())
+        return 1
     
+    def idtozip(self, idlist):
+        if idlist:
+            liste = []
+            for oid in idlist:
+                #print(oid)
+                print(self.findzip(oid))
+            return 1
+        else:
+            return 0
+
     def buildsql(self, name):
         conn = sqlite3.connect(name)
         conn.execute('CREATE TABLE if not exists ziplist(filename TEXT NOT NULL, xmlname TEXT NOT NULL, stamp DATE NOT NULL)')
@@ -120,8 +147,12 @@ dirname = "./ftp"
 s = search()
 
 s.setsrc(dirname)
-
+s.listdirzip()
+s.setsearch("./OhneDaten.txt")
+xml = s.listsearch()
+print(xml)
+s.idtozip(xml)
 #print(int(s.getsrc()))
 #s.setsearch('id2.txt')
 #print(s.getsearch())
-s.listdirzip()
+
