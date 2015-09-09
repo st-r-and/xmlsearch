@@ -104,16 +104,19 @@ class search:
     def findzip(self, xmlf):
         curs = self.conn.cursor()
         curs.execute('SELECT filename FROM ziplist WHERE xmlname = ? ORDER BY stamp DESC LIMIT 1', (xmlf,))
-        print(curs.fetchone())
-        return 1
+        #print(curs.fetchone())
+        return curs.fetchone()
     
     def idtozip(self, idlist):
         if idlist:
             liste = []
             for oid in idlist:
-                #print(oid)
-                print(self.findzip(oid))
-            return 1
+                ozip = self.findzip(oid)
+                if ozip != None:
+                    liste.append(ozip[0])
+                else:
+                    liste.append(ozip)
+            return liste
         else:
             return 0
 
@@ -146,12 +149,13 @@ class search:
 dirname = "./ftp"
 s = search()
 
-s.setsrc(dirname)
-s.listdirzip()
-s.setsearch("./OhneDaten.txt")
-xml = s.listsearch()
-print(xml)
-s.idtozip(xml)
+#s.setsrc(dirname)
+#s.listdirzip()
+s.setsearch("./IDs2.txt")
+xmls = s.listsearch()
+zips = s.idtozip(xmls)
+print(len(xmls))
+print(len(zips))
 #print(int(s.getsrc()))
 #s.setsearch('id2.txt')
 #print(s.getsearch())
