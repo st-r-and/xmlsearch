@@ -1,7 +1,12 @@
 ftp/**/*
 ftp-sample/**/*
+ftp-gz/**/*
+xml/**/*
 bak/**/*
 result/**/*
 error/**/*
-xmlzip.db
+xmlzip.db*
 id.txt
+IDs.txt
+IDs2.txt
+OhneDaten.txt
