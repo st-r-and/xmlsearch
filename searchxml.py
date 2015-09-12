@@ -79,7 +79,7 @@ class search:
         self.conn.commit()
         return self.count
 
-    def listsearch(self):
+    def listsearch(self): # macht aus der id-datei eine id-liste
         sfile = self.getsearch()
         if sfile:
             mode = 'r'
@@ -94,20 +94,19 @@ class search:
         else:
             return 0
 
-    def exzip(self, xmlf, zipf):
+    def exzip(self, xmlf, zipf): # entpackt die einzelne xml
         src = self.src
         dst = self.dst
-        zf = zipfile.Zipfile(src + '/' + zipf, 'r')
+        zf = zipfile.ZipFile(src + '/' + zipf, 'r')
         zf.extract(xmlf, dst)
         
 
-    def findzip(self, xmlf):
+    def findzip(self, xmlf): # sucht in der datenbank nach der aktuellsten xml und der zip
         curs = self.conn.cursor()
         curs.execute('SELECT filename FROM ziplist WHERE xmlname = ? ORDER BY stamp DESC LIMIT 1', (xmlf,))
-        #print(curs.fetchone())
         return curs.fetchone()
     
-    def idtozip(self, idlist):
+    def idtozip(self, idlist): #macht aus der id-liste eine zip-liste
         if idlist:
             liste = []
             for oid in idlist:
@@ -119,7 +118,18 @@ class search:
             return liste
         else:
             return 0
-
+        
+    def ziptoxml(self, idlist, ziplist): #macht aus den listen einzelne Aufgaben
+        src = self.getdst()
+        dst = self.getdst()
+        if (dst and src):
+            for i in range(len(idlist)):
+                if ziplist[i] != None:
+                    self.exzip(idlist[i], ziplist[i])
+            return 1
+        else:
+            return 0
+        
     def buildsql(self, name):
         conn = sqlite3.connect(name)
         conn.execute('CREATE TABLE if not exists ziplist(filename TEXT NOT NULL, xmlname TEXT NOT NULL, stamp DATE NOT NULL)')
@@ -149,13 +159,17 @@ class search:
 dirname = "./ftp"
 s = search()
 
-#s.setsrc(dirname)
+s.setsrc(dirname)
+s.setdst('./xml')
 #s.listdirzip()
 s.setsearch("./IDs2.txt")
 xmls = s.listsearch()
 zips = s.idtozip(xmls)
+print(xmls)
+print(zips)
 print(len(xmls))
 print(len(zips))
+s.ziptoxml(xmls, zips)
 #print(int(s.getsrc()))
 #s.setsearch('id2.txt')
 #print(s.getsearch())
